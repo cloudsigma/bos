@@ -35,15 +35,15 @@ INTERFACE_PUBLIC='eth0'
 INTERFACE_PRIVATE='eth1'
 
 ### TODO: put me elsewhere
-CONTROLLER1_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
-CONTROLLER1_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+CONTROLLER1_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+CONTROLLER1_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
 
 CONTROLLER1_HOSTNAME='controller1.mydomain.tld'
 CONTROLLER1_HOSTNAME_SHORT=${CONTROLLER1_HOSTNAME%%.*}
 
 ### TODO: put me elsewhere
-CONTROLLER2_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
-CONTROLLER2_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+CONTROLLER2_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+CONTROLLER2_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
 
 CONTROLLER2_HOSTNAME='controller2.mydomain.tld'
 CONTROLLER2_HOSTNAME_SHORT=${CONTROLLER2_HOSTNAME%%.*}
@@ -51,15 +51,15 @@ CONTROLLER2_HOSTNAME_SHORT=${CONTROLLER2_HOSTNAME%%.*}
 
 ## object
 ### TODO: do the same as controller IPs. Use interface names and device IPs from there
-OBJECT1_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
-OBJECT1_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+OBJECT1_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+OBJECT1_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
 
 OBJECT1_HOSTNAME='object1.mydomain.tld'
 OBJECT1_HOSTNAME_SHORT=${OBJECT1_HOSTNAME%%.*}
 
 ### TODO: do the same as controller IPs. Use interface names and device IPs from there
-OBJECT2_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
-OBJECT2_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+OBJECT2_IP_PUBLIC=$( ip -o -4 addr show dev $INTERFACE_PUBLIC | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
+OBJECT2_IP_PRIVATE=$( ip -o -4 addr show dev $INTERFACE_PRIVATE | gawk '{ match( $4, /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/, ip ); print ip[0] }' )
 
 OBJECT2_HOSTNAME='object2.mydomain.tld'
 OBJECT2_HOSTNAME_SHORT=${OBJECT2_HOSTNAME%%.*}
