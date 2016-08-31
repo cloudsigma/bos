@@ -13,4 +13,4 @@ General
 
 Pre-requisites
 --------------
-* add configuration for ntp pool to grab
+* add configuration for ntp pool to fetch time for lower stratum servers
