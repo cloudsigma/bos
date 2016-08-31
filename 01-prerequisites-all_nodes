@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# configuration
+source configuration
+
+# name resolution
+cat << EOF > /etc/hosts
+127.0.0.1   localhost $( hostname -s )
+
+$( hostname -i ) $( hostname -f )
+
+# The following lines are desirable for IPv6 capable hosts
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+
+
+# OpenStack
+## controller
+$CONTROLLER1_IP_PRIVATE $CONTROLLER1_HOSTNAME_SHORT
+$CONTROLLER2_IP_PRIVATE $CONTROLLER2_HOSTNAME_SHORT
+
+## object storage
+$OBJECT1_IP_PRIVATE $OBJECT1_HOSTNAME_SHORT
+$OBJECT2_IP_PRIVATE $OBJECT2_HOSTNAME_SHORT
+EOF
+
+
+# ntp
+apt -y install chrony
+cd /etc/chrony
+sed -ri 's@^pool .*$@pool 2.europe.pool.ntp.org iburst@g' chrony.conf
+systemctl stop chrony.service
+systemctl enable chrony.service
+systemctl start chrony.service
+cd
+
+
+# packages
+apt install software-properties-common
+add-apt-repository cloud-archive:mitaka
+
+apt -y update
+apt -y dist-upgrade
+
+apt -y install python-openstackclient

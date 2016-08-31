@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+source configuration
+
+# auth
+## swift user
+openstack user create --domain default --password $SWIFT_PASS swift
+
+## swift role
+openstack role add --project service --user swift admin
+
+## swift service
+openstack service create --name swift --description "OpenStack Object Storage" object-store
+
+## swift api endpoints
+openstack endpoint create --region RegionOne object-store public http://$CONTROLLER1_HOSTNAME_SHORT:8080/v1/AUTH_%\(tenant_id\)s
+openstack endpoint create --region RegionOne object-store internal http://$CONTROLLER1_HOSTNAME_SHORT:8080/v1/AUTH_%\(tenant_id\)s
+openstack endpoint create --region RegionOne object-store admin http://$CONTROLLER1_HOSTNAME_SHORT:8080/v1
+
+
+# install
+apt install -y swift swift-proxy python-swiftclient python-keystoneclient python-keystonemiddleware memcached
+
+
+# configure
+mkdir /etc/swift
+cp templates/swift/proxy-server.conf /etc/swift/
+
+sed -ri "s@MEMCACHE_SERVERS_CHANGEME@$CONTROLLER1_HOSTNAME_SHORT@g" /etc/swift/proxy-server.conf
+sed -ri "s@AUTH_URI_CHANGEME@$CONTROLLER1_HOSTNAME@" /etc/swift/proxy-server.conf
+sed -ri "s@AUTH_URL_CHANGEME@$CONTROLLER1_HOSTNAME@" /etc/swift/proxy-server.conf
+sed -ri "s@SWIFT_PASS_CHANGEME@$SWIFT_PASS@" /etc/swift/proxy-server.conf

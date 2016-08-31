@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+source configuration
+
+
+# account builder
+# note: numbers indicate: part_power, replicas, min_part_hours
+cd /etc/swift
+swift-ring-builder account.builder create 11 1 1
+
+## add node to the ring
+swift-ring-builder account.builder add --region 1 --zone 1 --ip $OBJECT1_IP_PRIVATE --port 6002 --device 1 --weight 100
+swift-ring-builder account.builder add --region 1 --zone 1 --ip $OBJECT2_IP_PRIVATE --port 6002 --device 1 --weight 100
+swift-ring-builder account.builder rebalance
+
+# container ring
+swift-ring-builder container.builder create 11 1 1
+swift-ring-builder container.builder add --region 1 --zone 1 --ip $OBJECT1_IP_PRIVATE --port 6001 --device 1 --weight 100
+swift-ring-builder container.builder add --region 1 --zone 1 --ip $OBJECT2_IP_PRIVATE --port 6001 --device 1 --weight 100
+swift-ring-builder container.builder rebalance
+
+# object ring
+swift-ring-builder object.builder create 11 1 1
+swift-ring-builder object.builder add --region 1 --zone 1 --ip $OBJECT1_IP_PRIVATE --port 6000 --device 1 --weight 100
+swift-ring-builder object.builder add --region 1 --zone 1 --ip $OBJECT2_IP_PRIVATE --port 6000 --device 1 --weight 100
+swift-ring-builder object.builder rebalance
+
+# swift configuration
+cp templates/swift/swift.conf /etc/swift/
+chown -R root:swift /etc/swift
+
+suffix=$( apg -M CLN -m 30 -n 1 )
+prefix=$( apg -M CLN -m 30 -n 1 )
+
+sed -ri "s@SWIFT_HASH_PATH_SUFFIX_CHANGEME@$suffix@" /etc/swift/swift.conf
+sed -ri "s@SWIFT_HASH_PATH_PREFIX_CHANGEME@$prefix@" /etc/swift/swift.conf
+
+
+# restart services
+## controller
+systemctl restart memcached.service
+systemctl restart swift-proxy.service
+
+## nodes
+swift-init all start
