@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+
+# params
+username=${1}
+
+
+# test
+## check if username was provided
+if [[ -z $username ]]; then
+    echo 'You need to provide a username as a parameter.'
+    exit 1
+elif [[ "$username" == 'admin' ]]; then
+    echo 'You cannot delete the admin user with this script.'
+    exit 2
+elif [[ ! -f ${HOME}/openstack-credentials/${username}-openrc ]]; then
+    echo "$username doesn't exist."
+    exit 3
+fi
+
+
+# do
+## get info
+source ${HOME}/openstack-credentials/${username}-openrc
+project_name=$OS_PROJECT_NAME
+
+## delete user
+source ${HOME}/openstack-credentials/admin-openrc
+
+read -p "Are you sure you want to delete '$username'? (yes|no) " answer
+
+if [[ "$answer" == 'yes' ]]; then
+    openstack user delete $username
+    unset answer
+
+    cat << EOF
+
+    The following user has been deleted:
+
+    user:       $username
+    project:    $project_name
+
+EOF
+
+fi
+
+read -p "Would you like to delete the '$project_name' project as well? (yes|no) " answer
+
+if [[ "$answer" == 'yes' ]]; then
+    openstack project delete $project_name
+    unset answer
+
+    cat << EOF
+
+    The following user has been deleted:
+
+    user:       $username
+    project:    $project_name
+
+EOF
+
+fi
+
+
+## delete credentials file
+rm -f ${HOME}/oopenstack-credentials/${username}-openrc
