@@ -26,7 +26,8 @@ sed -ri "s/^\#admin_token.*/admin_token = $KEYSTONE_TOKEN/" /etc/keystone/keysto
 sed -ri "s/^#provider =.*/provider = fernet/" /etc/keystone/keystone.conf
 
 ## db
-sed -ri "s@^connection =.*@connection = mysql+pymysql://keystone:$KEYSTONE_DBPASS\@${HOSTNAME['controller1']}/keystone@" /etc/keystone/keystone.conf
+sed -ri "s@^connection =.*@connection = mysql+pymysql://keystone:$KEYSTONE_DBPASS\@${HOSTNAME['controller1']}/keystone@" \
+    /etc/keystone/keystone.conf
 
 ## populate
 su -s /bin/sh -c "keystone-manage db_sync" keystone
