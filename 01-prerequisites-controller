@@ -1,5 +1,6 @@
-
 #!/usr/bin/env bash
+
+set -x
 
 # configuration
 source configuration
@@ -13,7 +14,7 @@ cat << EOF > /etc/mysql/conf.d/openstack.cnf
 default-character-set = utf8
 
 [mysqld]
-bind-address = $NETWORK_PRIVATE
+bind-address = ${IP_PRIVATE['controller1']}
 default-storage-engine = innodb
 innodb_file_per_table
 max_connections = 4096
@@ -30,7 +31,10 @@ default-character-set = utf8
 EOF
 
 ## correct utf8 bug: https://bugs.launchpad.net/openstack-manuals/+bug/1575688
-sed -ri "s@utf8mb4@utf8@g" /etc/mysql/mariadb.conf.d/*
+sed -ri "s/utf8mb4/utf8/" /etc/mysql/mariadb.conf.d/*
+
+## remove default bind
+sed -i '/^bind-address/d' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 systemctl stop mysql.service
 systemctl enable mysql.service
@@ -48,7 +52,7 @@ mysql -u root -e "FLUSH PRIVILEGES;"
 # nosql
 apt -y install mongodb-server mongodb-clients python-pymongo
 
-sed -ri "s@bind_ip.*$@bind_ip = $CONTROLLER1_IP_PRIVATE@" /etc/mongodb.conf
+sed -ri "s/bind_ip.*$/bind_ip = ${IP_PRIVATE[controller1]}/" /etc/mongodb.conf
 
 echo 'smallfiles = true' >> /etc/mongodb.conf
 

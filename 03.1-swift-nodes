@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 source configuration
 
 
@@ -21,46 +23,67 @@ apt install -y swift swift-account swift-container swift-object
 
 ## configure each node accordingly
 case $( ip -4 addr show $INTERFACE_PRIVATE | grep -oP "(?<=inet ).*(?=/)" ) in
-    $OBJECT1_IP_PRIVATE)
+    ${IP_PRIVATE['node1']})
         # rsync
         ## configure
         cp templates/swift/rsyncd.conf.object1 /etc/rsyncd.conf
-        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@$OBJECT1_IP_PRIVATE@" /etc/rsyncd.conf
+        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node1']}@" /etc/rsyncd.conf
 
         # configure
         ## account-server
         cp templates/swift/account-server.conf.object1 /etc/swift/account-server.conf
-        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@$OBJECT1_IP_PRIVATE@" /etc/swift/account-server.conf
+        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node1']}@" /etc/swift/account-server.conf
 
         ## container-server
         cp templates/swift/container-server.conf.object1 /etc/swift/container-server.conf
-        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@$OBJECT1_IP_PRIVATE@" /etc/swift/container-server.conf
+        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node1']}@" /etc/swift/container-server.conf
 
         ## object-server
         cp templates/swift/object-server.conf.object1 /etc/swift/object-server.conf
-        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@$OBJECT1_IP_PRIVATE@" /etc/swift/object-server.conf
+        sed -ri "s@OBJECT1_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node1']}@" /etc/swift/object-server.conf
 
         ;;
-    $OBJECT2_IP_PRIVATE)
+    ${IP_PRIVATE['node2']})
         # rsync
         ## configure
         cp templates/swift/rsyncd.conf.object2 /etc/rsyncd.conf
-        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@$OBJECT2_IP_PRIVATE@" /etc/rsyncd.conf
+        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node2']}@" /etc/rsyncd.conf
 
         # configure
         ## account-server
         cp templates/swift/account-server.conf.object2 /etc/swift/account-server.conf
-        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@$OBJECT2_IP_PRIVATE@" /etc/swift/account-server.conf
+        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node2']}@" /etc/swift/account-server.conf
 
         ## container-server
         cp templates/swift/container-server.conf.object2 /etc/swift/container-server.conf
-        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@$OBJECT2_IP_PRIVATE@" /etc/swift/container-server.conf
+        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node2']}@" /etc/swift/container-server.conf
 
         ## object-server
         cp templates/swift/object-server.conf.object2 /etc/swift/object-server.conf
-        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@$OBJECT2_IP_PRIVATE@" /etc/swift/object-server.conf
+        sed -ri "s@OBJECT2_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node2']}@" /etc/swift/object-server.conf
 
         ;;
+    ${IP_PRIVATE['node3']})
+        # rsync
+        ## configure
+        cp templates/swift/rsyncd.conf.object3 /etc/rsyncd.conf
+        sed -ri "s@OBJECT3_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node3']}@" /etc/rsyncd.conf
+
+        # configure
+        ## account-server
+        cp templates/swift/account-server.conf.object3 /etc/swift/account-server.conf
+        sed -ri "s@OBJECT3_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node3']}@" /etc/swift/account-server.conf
+
+        ## container-server
+        cp templates/swift/container-server.conf.object3 /etc/swift/container-server.conf
+        sed -ri "s@OBJECT3_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node3']}@" /etc/swift/container-server.conf
+
+        ## object-server
+        cp templates/swift/object-server.conf.object3 /etc/swift/object-server.conf
+        sed -ri "s@OBJECT3_IP_PRIVATE_CHANGEME@${IP_PRIVATE['node3']}@" /etc/swift/object-server.conf
+
+        ;;
+
     *)
         echo This server is not configured.Check the configuration file.
         exit 1
@@ -69,6 +92,7 @@ esac
 
 ## permissions
 mkdir -p /var/cache/swift
+if [ ! -d /srv/node ]; then mkdir -p /srv/node; fi
 chown -R swift:swift /srv/node
 chown -R root:swift /var/cache/swift
 chmod -R 775 /var/cache/swift

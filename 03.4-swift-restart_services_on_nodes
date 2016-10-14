@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -x
+
+# restart services
+## nodes
+swift-init all start
