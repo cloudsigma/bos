@@ -37,7 +37,13 @@ keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 
 ## paste
 cd /etc/keystone
-curl -O https://raw.githubusercontent.com/openstack/keystone/stable/mitaka/etc/keystone-paste.ini
+
+### remove admin_auth_token and re-bootstrap
+curl https://raw.githubusercontent.com/openstack/keystone/stable/mitaka/etc/keystone-paste.ini | \
+    sed 's@ admin_token_auth @ @g' > /etc/keystone/keystone-paste.ini
+
+
+### setup assignment driver
 cd -
 
 
