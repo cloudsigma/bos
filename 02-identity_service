@@ -52,6 +52,10 @@ driver = keystone.assignment.backends.sql.Assignment
 EOF
 
 ### rebuild certificates
+keystone-manage pki_setup --keystone-user keystone --keystone-group keystone --rebuild
+
+### re-bootstrap
+keystone-manage bootstrap --bootstrap-password ${KEYSTONE_PASS}
 cd -
 
 
