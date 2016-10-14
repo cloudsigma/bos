@@ -1,12 +1,12 @@
 # passwords
 # Try using: tools/bos-generate_passwords. You will need to install apg
-DATABASE_PASS=nobbaumghavSawpOoghRuejAvOjOc8
 ADMIN_PASS=KliFliOwm0DrofnoinOcZijvernAin
 CEILOMETER_DBPASS=2ocWinlopCawCyidutovDadlevwyob
 CEILOMETER_PASS=VedfocatMottyajcemamircacMawk8
 CINDER_DBPASS=NagBupHytpaybUthKuebesIturdip5
 CINDER_PASS=FadCanEkThoojMotKidogyojFaHes7
 DASH_DBPASS=fihikCyragwukregOmeawemerinen1
+DATABASE_PASS=nobbaumghavSawpOoghRuejAvOjOc8
 DEMO_PASS=vekcynuvvirWedUmmAr9BirWiquat6
 GLANCE_DBPASS=klidVihelnipAdJiciesJulevErsh9
 GLANCE_PASS=eddeadjuDrejPynlefifrivithgod1
@@ -14,6 +14,7 @@ HEAT_DBPASS=apyaynMavNasJurdoyDrep9ojpiLid
 HEAT_DOMAIN_PASS=foinfuncykciFleajyuHojLinloct7
 HEAT_PASS=OkUkTesunwipEkalCensUgfel2oshi
 KEYSTONE_DBPASS=CetTotyesaweibNanBakUvwawesAl1
+KEYSTONE_PASS=BicEwOcabGogVucIxyayHeam6Swuto
 NEUTRON_DBPASS=mejmeErsInkEtwegAdnafewvugRij0
 NEUTRON_PASS=RicsyikByigModifewUpquiOts6blo
 NOVA_DBPASS=Scayd6TwiUgCigDyctOQuodgeersya
@@ -22,14 +23,13 @@ RABBIT_PASS=WahaitOftElg8osFajarvOnEusIaki
 SWIFT_PASS=TinFugtaurgEishthijqueecUfKod8
 
 
-
 # networking
-NETWORK_PRIVATE='10.0.0.0/16'
+NETWORK_PRIVATE='10.%'
 NETWORK_DOMAIN='tbc.cloudsigma.com'
 
 ## interfaces
-INTERFACE_PUBLIC='ens3'
-INTERFACE_PRIVATE='ens4'
+INTERFACE_PUBLIC='eth0'
+INTERFACE_PRIVATE='eth1'
 
 ### TODO: put me elsewhere
 declare -Al HOSTNAME
@@ -41,12 +41,12 @@ HOSTNAME['node2']="node2.${NETWORK_DOMAIN}"
 HOSTNAME['node3']="node3.${NETWORK_DOMAIN}"
 
 declare -Al IP_PUBLIC
-IP_PUBLIC['balancer1']='94.26.101.115'
-IP_PUBLIC['controller1']='94.26.101.214'
-IP_PUBLIC['controller2']='94.26.101.102'
-IP_PUBLIC['node1']='94.26.101.34'
-IP_PUBLIC['node2']='94.26.101.95'
-IP_PUBLIC['node3']='94.26.101.119'
+IP_PUBLIC['balancer1']='111.111.111.10'
+IP_PUBLIC['controller1']='111.111.111.20'
+IP_PUBLIC['controller2']='111.111.111.21'
+IP_PUBLIC['node1']='111.111.111.30'
+IP_PUBLIC['node2']='111.111.111.31'
+IP_PUBLIC['node3']='111.111.111.32'
 
 declare -Al IP_PRIVATE
 IP_PRIVATE['balancer1']='10.0.0.10'
@@ -56,13 +56,7 @@ IP_PRIVATE['node1']='10.0.0.30'
 IP_PRIVATE['node2']='10.0.0.31'
 IP_PRIVATE['node3']='10.0.0.32'
 
-MEMCACHE['master']='controller1'
+declare -Al MEMCACHE
+MEMCACHE['master']=${HOSTNAME['controller1']}
 
 CHRONY_POOL='pool 2.europe.pool.ntp.org iburst'
-
-# authentication
-KEYSTONE_DB_HOST="$NETWORK_PRIVATE"
-
-## please, use $( openssl rand -hex 10 ) to generate it
-KEYSTONE_TOKEN=83dc189e4711e051d36b
-
