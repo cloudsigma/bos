@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -x
+
+# restart services
+## controller
+systemctl restart memcached.service
+systemctl restart swift-proxy.service

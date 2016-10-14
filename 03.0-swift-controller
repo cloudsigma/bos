@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 source configuration
 
 # auth
@@ -25,6 +27,8 @@ apt install -y swift swift-proxy python-swiftclient python-keystoneclient python
 # configure
 mkdir /etc/swift
 cp templates/swift/proxy-server.conf /etc/swift/
+chown -R swift:swift /etc/swift/
+chmod -R go-rwx /etc/swift
 
 sed -ri "s@MEMCACHE_SERVERS_CHANGEME@$CONTROLLER1_HOSTNAME_SHORT@g" /etc/swift/proxy-server.conf
 sed -ri "s@AUTH_URI_CHANGEME@$CONTROLLER1_HOSTNAME@" /etc/swift/proxy-server.conf

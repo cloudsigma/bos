@@ -1,29 +1,32 @@
 #!/usr/bin/env bash
 
+set -x
+
 source configuration
 
 
 # create DB
 mysql -e "CREATE DATABASE keystone;"
 mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY '$KEYSTONE_DBPASS';"
-mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'$KEYSTONE_DB_HOST' IDENTIFIED BY 'KEYSTONE_DBPASS';"
+mysql -e "GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'$KEYSTONE_DB_HOST' IDENTIFIED BY '$KEYSTONE_DBPASS';"
 
 # keystone
-## stop keystone from starting automatically
-echo "manual" > /etc/init/keystone.override
-
 ## install
 apt install -y keystone apache2 libapache2-mod-wsgi
+
+## stop keystone from starting automatically
+systemctl mask keystone.service
+systemctl stop keystone.service
 
 ## zero configuration
 cat /usr/share/keystone/keystone.conf.sample > /etc/keystone/keystone.conf
 
 ## token
-sed -ri "s@^\#admin_token.*@admin_token = $KEYSTONE_TOKEN@" /etc/keystone/keystone.conf
-sed -ri "s@^#provider =.*@provider = fernet@" /etc/keystone/keystone.conf
+sed -ri "s/^\#admin_token.*/admin_token = $KEYSTONE_TOKEN/" /etc/keystone/keystone.conf
+sed -ri "s/^#provider =.*/provider = fernet/" /etc/keystone/keystone.conf
 
 ## db
-sed -ri "s@^connection =.*@connection = mysql+pymysql://keystone:$KEYSTONE_DBPASS\@$CONTROLLER1_HOSTNAME_SHORT/keystone@" /etc/keystone/keystone.conf
+sed -ri "s@^connection =.*@connection = mysql+pymysql://keystone:$KEYSTONE_DBPASS\@${HOSTNAME['controller1']}/keystone@" /etc/keystone/keystone.conf
 
 ## populate
 su -s /bin/sh -c "keystone-manage db_sync" keystone
@@ -39,7 +42,7 @@ cd -
 
 # apache
 ## main settings
-cat <( echo "ServerName $CONTROLLER1_HOSTNAME_SHORT" ) /etc/apache2/apache2.conf > /tmp/keystone_apache_settings
+cat <( echo "ServerName ${HOSTNAME['controller1']}" ) /etc/apache2/apache2.conf > /tmp/keystone_apache_settings
 cat /tmp/keystone_apache_settings > /etc/apache2/apache2.conf
 rm /tmp/keystone_apache_settings
 
@@ -91,15 +94,15 @@ rm -f /var/lib/keystone/keystone.db
 
 
 # services
-export OS_TOKEN=33242594ab7cdac6ef56
-export OS_URL=http://$CONTROLLER1_HOSTNAME_SHORT:35357/v3
+export OS_TOKEN=$KEYSTONE_TOKEN
+export OS_URL=http://${HOSTNAME['controller1']}:35357/v3
 export OS_IDENTITY_API_VERSION=3
 openstack service create --name keystone --description "OpenStack Identity" identity
 
 ## create endpoints
-openstack endpoint create --region RegionOne identity public http://$CONTROLLER1_HOSTNAME_SHORT:5000/v3
-openstack endpoint create --region RegionOne identity internal http://$CONTROLLER1_HOSTNAME_SHORT:5000/v3
-openstack endpoint create --region RegionOne identity admin http://$CONTROLLER1_HOSTNAME_SHORT:35357/v3
+openstack endpoint create --region RegionOne identity public http://${HOSTNAME['controller1']}:5000/v3
+openstack endpoint create --region RegionOne identity internal http://${HOSTNAME['controller1']}:5000/v3
+openstack endpoint create --region RegionOne identity admin http://${HOSTNAME['controller1']}:35357/v3
 
 ## admin user
 openstack domain create --description "Default Domain" default
@@ -126,7 +129,7 @@ export OS_USER_DOMAIN_NAME=default
 export OS_PROJECT_NAME=admin
 export OS_USERNAME=admin
 export OS_PASSWORD=$ADMIN_PASS
-export OS_AUTH_URL=http://$CONTROLLER1_HOSTNAME_SHORT:35357/v3
+export OS_AUTH_URL=http://${HOSTNAME['controller1']}:35357/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF
@@ -137,7 +140,7 @@ export OS_USER_DOMAIN_NAME=default
 export OS_PROJECT_NAME=demo
 export OS_USERNAME=demo
 export OS_PASSWORD=$DEMO_PASS
-export OS_AUTH_URL=http://$CONTROLLER1_HOSTNAME_SHORT:5000/v3
+export OS_AUTH_URL=http://${HOSTNAME['controller1']}:5000/v3
 export OS_IDENTITY_API_VERSION=3
 export OS_IMAGE_API_VERSION=2
 EOF

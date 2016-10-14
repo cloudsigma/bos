@@ -1,0 +1,30 @@
+[DEFAULT]
+bind_port = 6002
+bind_ip = OBJECT3_IP_PRIVATE_CHANGEME
+bind_port = 6002
+user = swift
+swift_dir = /etc/swift
+devices = /srv/node/swift-devices
+mount_check = False
+
+[pipeline:main]
+pipeline = healthcheck recon account-server
+
+[app:account-server]
+use = egg:swift#account
+
+[filter:healthcheck]
+use = egg:swift#healthcheck
+
+[filter:recon]
+use = egg:swift#recon
+recon_cache_path = /var/cache/swift
+
+[account-replicator]
+
+[account-auditor]
+
+[account-reaper]
+
+[filter:xprofile]
+use = egg:swift#xprofile
